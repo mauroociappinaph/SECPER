@@ -57,7 +57,7 @@ export class PdfService {
   /**
    * Analiza un PDF usando Mistral AI OCR
    */
-  async analyzePdfWithMistral(buffer: Buffer): Promise<any> {
+  async analyzePdfWithMistral(buffer: Buffer): Promise<unknown> {
     try {
       console.log(
         `[${new Date().toISOString()}] [PdfService.analyzePdfWithMistral] Starting analysis:`,
