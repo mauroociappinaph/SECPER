@@ -19,9 +19,6 @@ export const readPdfController = async (req: Request, res: Response) => {
     if (!mReq.file) {
       return res.status(400).json({ error: 'No se envió ningún archivo PDF.' });
     }
-    // Extraer texto (opcional)
-    // const texto = await readPdfText(mReq.file.buffer);
-    // Analizar con Mistral
     const mistralResult = await analyzePdfWithMistral(mReq.file.buffer);
     res.json({ resultado: mistralResult });
   } catch (error: any) {
