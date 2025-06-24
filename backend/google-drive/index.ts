@@ -1,4 +1,10 @@
 /**
+ * Punto de entrada centralizado del módulo Google Drive.
+ * Reexporta servicios, controladores, validadores y rutas
+ * para facilitar la importación desde otras partes del backend.
+ */
+
+/**
  * Módulo Google Drive Modularizado
  * Exportaciones centralizadas para el módulo de integración con Google Drive
  */
