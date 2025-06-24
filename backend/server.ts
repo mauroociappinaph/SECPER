@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import routes from './routes/routes';
 import { requestLogger, notFoundHandler, errorHandler } from './middleware/errorHandler';
-import { PORT, CORS_ORIGINS } from './config/constants';
+import { CORS_ORIGINS } from './config/constants';
 
 const app = express();
 
@@ -71,9 +71,4 @@ process.on('unhandledRejection', (reason, promise) => {
   process.exit(1);
 });
 
-app.listen(PORT, () => {
-  console.log(`Servidor escuchando en http://localhost:${PORT}`);
-  console.log(`Documentacion disponible en http://localhost:${PORT}`);
-  console.log(`Health check en http://localhost:${PORT}/health`);
-  console.log(`Entorno: ${process.env.NODE_ENV || 'development'}`);
-});
+export default app;
