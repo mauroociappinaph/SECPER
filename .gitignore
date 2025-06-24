@@ -48,6 +48,7 @@ jspm_packages/
 # dotenv environment variables file
 .env.test
 .env.production
+.env
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
@@ -55,3 +56,5 @@ jspm_packages/
 .cursorrules
 
 /generated/prisma
+
+.package-lock.json
