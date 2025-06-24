@@ -4,8 +4,9 @@ import { GoogleDriveServiceError } from '../../../utils/errors';
 import { driveAuthService } from '../auth/authService';
 
 /**
- * Servicio especializado para operaciones de archivos en Google Drive
- * Optimizado para operaciones CRUD eficientes
+ * Servicio especializado para operaciones CRUD de archivos en Google Drive.
+ * Maneja la carga, descarga, eliminación, y consulta de archivos y carpetas,
+ * utilizando inicialización diferida del cliente y manejo de errores robusto.
  */
 export class DriveFileOperationsService {
   private drive: any = null;

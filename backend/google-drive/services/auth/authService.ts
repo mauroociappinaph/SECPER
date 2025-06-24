@@ -2,8 +2,10 @@ import { OAuth2Client } from 'google-auth-library';
 import { GoogleDriveServiceError } from '../../../utils/errors';
 
 /**
- * Servicio especializado para autenticación OAuth2 con Google Drive
- * Optimizado para minimizar el uso de tokens
+ * Clase que maneja la autenticación con Google Drive mediante OAuth2.
+ * Implementa lazy initialization del cliente OAuth2 y provee métodos
+ * para generar URLs de autorización, intercambiar códigos por tokens,
+ * validar y refrescar tokens, y configurar credenciales.
  */
 export class DriveAuthService {
   private oauth2Client: OAuth2Client | null = null;
