@@ -111,3 +111,16 @@ export class RateLimitError extends AppError {
     super(message, 'RATE_LIMIT_ERROR', 429, metadata);
   }
 }
+
+/**
+ * Error específico del servicio de Google Drive
+ */
+export class GoogleDriveServiceError extends AppError {
+  constructor(
+    message: string,
+    code: string = 'GOOGLE_DRIVE_ERROR',
+    metadata?: Record<string, unknown>
+  ) {
+    super(message, code, 500, metadata);
+  }
+}
