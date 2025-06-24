@@ -1,0 +1,159 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== MODELOS ====================
+
+// Usuario del sistema
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  conversations Conversation[]
+  calendarEvents CalendarEvent[]
+
+  @@map("users")
+}
+
+// Conversaciones de chat
+model Conversation {
+  id        String   @id @default(cuid())
+  title     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String?
+
+  // Relaciones
+  user     User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  messages Message[]
+
+  @@map("conversations")
+}
+
+// Mensajes de chat
+model Message {
+  id             String   @id @default(cuid())
+  role           String   // 'user', 'assistant', 'system'
+  content        String
+  timestamp      DateTime @default(now())
+  conversationId String
+
+  // Metadatos opcionales
+  model       String?
+  temperature Float?
+  maxTokens   Int?
+  
+  // Metricas de uso (para mensajes del asistente)
+  promptTokens     Int?
+  completionTokens Int?
+  totalTokens      Int?
+
+  // Relaciones
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+// Eventos de calendario
+model CalendarEvent {
+  id          String   @id @default(cuid())
+  summary     String
+  description String?
+  start       DateTime
+  end         DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String?
+
+  // Metadatos de Zapier
+  zapierEventId String?
+  zapierStatus  String? // 'pending', 'created', 'failed'
+  zapierError   String?
+
+  // Relaciones
+  user      User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
+  attendees CalendarAttendee[]
+
+  @@map("calendar_events")
+}
+
+// Invitados a eventos de calendario
+model CalendarAttendee {
+  id      String @id @default(cuid())
+  email   String
+  eventId String
+
+  // Relaciones
+  event CalendarEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([email, eventId])
+  @@map("calendar_attendees")
+}
+
+// Archivos PDF procesados
+model PdfDocument {
+  id           String   @id @default(cuid())
+  filename     String
+  originalName String
+  size         Int
+  mimeType     String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Contenido extraido
+  extractedText String?
+  ocrText       String?
+  
+  // Metadatos de procesamiento
+  textExtractionStatus String? // 'pending', 'completed', 'failed'
+  ocrStatus            String? // 'pending', 'completed', 'failed'
+  textExtractionError  String?
+  ocrError             String?
+  
+  // Metricas
+  pages        Int?
+  confidence   Float?
+  language     String?
+
+  @@map("pdf_documents")
+}
+
+// Log de actividades del sistema
+model ActivityLog {
+  id        String   @id @default(cuid())
+  action    String   // 'chat_message', 'calendar_event', 'pdf_upload', etc.
+  module    String   // 'chat', 'calendar', 'pdf'
+  details   String?  // JSON con detalles especificos
+  userId    String?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@map("activity_logs")
+}
+
+// Configuracion del sistema
+model SystemConfig {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+  type  String // 'string', 'number', 'boolean', 'json'
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("system_config")
+}
