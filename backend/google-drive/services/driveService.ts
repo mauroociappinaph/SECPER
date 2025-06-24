@@ -3,8 +3,9 @@ import { driveFileOperationsService } from './files/fileOperationsService';
 import { driveSearchService, DriveFile } from './search/searchService';
 
 /**
- * Servicio principal modularizado para Google Drive
- * Orquesta los módulos especializados para optimizar el uso de tokens
+ * Servicio principal que orquesta la integración con Google Drive.
+ * Agrupa operaciones de autenticación, carga/descarga de archivos, búsqueda y estado.
+ * Utiliza servicios modulares para mejorar el mantenimiento y la reutilización.
  */
 export class GoogleDriveService {
   constructor() {

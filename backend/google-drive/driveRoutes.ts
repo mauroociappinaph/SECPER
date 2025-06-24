@@ -1,3 +1,9 @@
+/**
+ * Define las rutas de la API para operaciones con Google Drive.
+ * Incluye endpoints para autenticación, carga/descarga de archivos,
+ * búsqueda, manejo de carpetas, y verificación del estado del servicio.
+ * Utiliza multer para manejo de archivos PDF en memoria.
+ */
 import { Router } from 'express';
 import { DriveController } from './controllers/driveController';
 import multer from 'multer';

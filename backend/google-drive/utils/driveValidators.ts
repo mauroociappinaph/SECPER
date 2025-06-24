@@ -1,5 +1,7 @@
 /**
- * Utilidades para validar operaciones de Google Drive
+ * Clase utilitaria que centraliza validaciones para operaciones de Google Drive.
+ * Incluye validaciones para archivos, IDs, nombres, paginación, términos de búsqueda
+ * y códigos de autorización OAuth. Provee también reglas de validación globales.
  */
 export class DriveValidators {
   // Tamaño máximo de archivo: 100MB (límite de Google Drive API)

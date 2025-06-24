@@ -15,8 +15,10 @@ export interface DriveFile {
 }
 
 /**
- * Servicio especializado para búsqueda y listado en Google Drive
- * Optimizado para consultas eficientes y paginación
+ * Servicio especializado para búsqueda y análisis de archivos PDF en Google Drive.
+ * Incluye funcionalidades para listar, buscar y filtrar por criterios avanzados,
+ * así como obtener estadísticas y validar la salud del servicio.
+ * Utiliza inicialización diferida y control de errores personalizado.
  */
 export class DriveSearchService {
   private drive: any = null;
