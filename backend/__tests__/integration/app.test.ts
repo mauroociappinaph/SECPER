@@ -61,3 +61,37 @@ describe('Endpoints principales de la API', () => {
     expect([200, 500]).toContain(res.status);
   });
 });
+
+describe('Casos de error y validaciones', () => {
+  // Calendario: falta summary
+  it('POST /api/calendario/evento debe fallar si falta summary', async () => {
+    const res = await request(app)
+      .post('/api/calendario/evento')
+      .send({ start: new Date().toISOString(), end: new Date().toISOString() });
+    expect([400, 422, 500]).toContain(res.status); // Según tu lógica de validación
+  });
+
+  // PDF: endpoint inexistente
+  it('GET /api/pdf/no-existe debe responder 404', async () => {
+    const res = await request(app).get('/api/pdf/no-existe');
+    expect(res.status).toBe(404);
+  });
+
+  // Chat: ID de conversación inválido
+  it('GET /api/chat/conversations/ID_INEXISTENTE debe responder 404 o error', async () => {
+    const res = await request(app).get('/api/chat/conversations/ID_INEXISTENTE');
+    expect([404, 400, 500]).toContain(res.status);
+  });
+
+  // Google Drive: archivo inexistente
+  it('GET /api/drive/download/ID_INEXISTENTE debe responder error', async () => {
+    const res = await request(app).get('/api/drive/download/ID_INEXISTENTE');
+    expect([404, 400, 500]).toContain(res.status);
+  });
+
+  // Ruta global inexistente
+  it('GET /ruta-que-no-existe debe responder 404', async () => {
+    const res = await request(app).get('/ruta-que-no-existe');
+    expect(res.status).toBe(404);
+  });
+});

@@ -17,7 +17,8 @@ export class ChatService {
       model: 'mistral-large-latest',
       temperature: 0.7,
       maxTokens: 1000,
-      systemPrompt: 'Eres un asistente inteligente y útil. Responde de manera clara, concisa y profesional.'
+      systemPrompt:
+        'Eres un asistente inteligente y útil. Responde de manera clara, concisa y profesional.',
     };
   }
 
@@ -27,39 +28,41 @@ export class ChatService {
   async sendMessage(request: ChatRequest): Promise<ChatResponse> {
     try {
       const settings = { ...this.defaultSettings, ...request };
-      
+
       // Obtener o crear conversación
-      const conversation = this.conversationService.getOrCreateConversation(request.conversationId);
-      
-      // Crear mensaje del usuario
-      const userMessage = this.conversationService.createMessage('user', request.message, conversation.id);
-      this.conversationService.addMessageToConversation(conversation.id, userMessage);
-      
-      // Obtener respuesta de Mistral
-      const mistralResponse = await this.mistralService.generateResponse(
-        conversation.messages,
-        {
-          model: settings.model,
-          temperature: settings.temperature,
-          maxTokens: settings.maxTokens,
-          systemPrompt: settings.systemPrompt
-        }
+      const conversation = await this.conversationService.getOrCreateConversation(
+        request.conversationId
       );
-      
-      // Crear mensaje del asistente
-      const assistantMessage = this.conversationService.createMessage(
-        'assistant', 
-        mistralResponse.content, 
+
+      // Crear mensaje del usuario
+      const userMessage = this.conversationService.createMessage(
+        'user',
+        request.message,
         conversation.id
       );
-      this.conversationService.addMessageToConversation(conversation.id, assistantMessage);
+      await this.conversationService.addMessageToConversation(conversation.id, userMessage);
+
+      // Obtener respuesta de Mistral
+      const mistralResponse = await this.mistralService.generateResponse(conversation.messages, {
+        model: settings.model,
+        temperature: settings.temperature,
+        maxTokens: settings.maxTokens,
+        systemPrompt: settings.systemPrompt,
+      });
+
+      // Crear mensaje del asistente
+      const assistantMessage = this.conversationService.createMessage(
+        'assistant',
+        mistralResponse.content,
+        conversation.id
+      );
+      await this.conversationService.addMessageToConversation(conversation.id, assistantMessage);
 
       return {
         message: assistantMessage,
         conversationId: conversation.id,
-        usage: mistralResponse.usage
+        usage: mistralResponse.usage,
       };
-
     } catch (error: any) {
       console.error('Error en ChatService.sendMessage:', error);
       throw new Error(`Error al procesar mensaje: ${error.message}`);
@@ -69,50 +72,50 @@ export class ChatService {
   /**
    * Obtiene una conversación por ID
    */
-  getConversation(conversationId: string) {
-    return this.conversationService.getConversation(conversationId);
+  async getConversation(conversationId: string) {
+    return await this.conversationService.getConversation(conversationId);
   }
 
   /**
    * Obtiene todas las conversaciones con paginación
    */
-  getAllConversations(page: number = 1, limit: number = 20) {
-    return this.conversationService.getAllConversations(page, limit);
+  async getAllConversations(page: number = 1, limit: number = 20) {
+    return await this.conversationService.getAllConversations(page, limit);
   }
 
   /**
    * Elimina una conversación
    */
-  deleteConversation(conversationId: string): boolean {
-    return this.conversationService.deleteConversation(conversationId);
+  async deleteConversation(conversationId: string): Promise<boolean> {
+    return await this.conversationService.deleteConversation(conversationId);
   }
 
   /**
    * Limpia todas las conversaciones
    */
-  clearAllConversations(): void {
-    this.conversationService.clearAllConversations();
+  async clearAllConversations(): Promise<void> {
+    await this.conversationService.clearAllConversations();
   }
 
   /**
    * Actualiza el título de una conversación
    */
-  updateConversationTitle(conversationId: string, newTitle: string): boolean {
-    return this.conversationService.updateConversationTitle(conversationId, newTitle);
+  async updateConversationTitle(conversationId: string, newTitle: string): Promise<boolean> {
+    return await this.conversationService.updateConversationTitle(conversationId, newTitle);
   }
 
   /**
    * Busca en conversaciones por texto
    */
-  searchConversations(query: string) {
-    return this.conversationService.searchConversations(query);
+  async searchConversations(query: string) {
+    return await this.conversationService.searchConversations(query);
   }
 
   /**
    * Obtiene estadísticas del chat
    */
-  getStats() {
-    return this.conversationService.getStats();
+  async getStats() {
+    return await this.conversationService.getStats();
   }
 
   /**
