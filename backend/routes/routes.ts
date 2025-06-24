@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import calendarRoutes from '../calender/callendersRoutes';
+import calendarRoutes from '../calendar/calendarRoutes';
 import pdfRoutes from '../pdf/pdfRoutes';
 import chatRoutes from '../chat/chatRoutes';
 
