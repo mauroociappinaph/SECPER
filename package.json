@@ -1,0 +1,30 @@
+{
+  "name": "mi-chatgpt",
+  "version": "1.0.0",
+  "description": "ChatGPT personalizado con backend en Node.js y TypeScript",
+  "main": "backend/server.ts",
+  "scripts": {
+    "start": "node dist/backend/server.js",
+    "dev": "nodemon --watch backend --ext ts --exec ts-node backend/server.ts",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^4.18.2",
+    "multer": "^2.0.1",
+    "pdf-parse": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^4.17.21",
+    "@types/multer": "^1.4.13",
+    "@types/node": "^20.11.30",
+    "@types/pdf-parse": "^1.1.5",
+    "nodemon": "^3.0.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}
