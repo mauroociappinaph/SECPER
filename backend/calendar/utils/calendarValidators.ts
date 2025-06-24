@@ -10,19 +10,22 @@ export class CalendarValidators {
       return { isValid: false, error: 'Los datos del evento son requeridos' };
     }
 
+    // Type guard para asegurar que data es un objeto con las propiedades esperadas
+    const eventData = data as Record<string, unknown>;
+
     // Validar summary (título)
-    if (!data.summary || typeof data.summary !== 'string') {
+    if (!eventData.summary || typeof eventData.summary !== 'string') {
       return {
         isValid: false,
         error: 'El título del evento es requerido y debe ser una cadena de texto',
       };
     }
 
-    if (data.summary.trim() === '') {
+    if ((eventData.summary as string).trim() === '') {
       return { isValid: false, error: 'El título del evento no puede estar vacío' };
     }
 
-    if (data.summary.length > 200) {
+    if ((eventData.summary as string).length > 200) {
       return {
         isValid: false,
         error: 'El título del evento es demasiado largo (máximo 200 caracteres)',
@@ -30,14 +33,14 @@ export class CalendarValidators {
     }
 
     // Validar fechas
-    if (!data.start || typeof data.start !== 'string') {
+    if (!eventData.start || typeof eventData.start !== 'string') {
       return {
         isValid: false,
         error: 'La fecha de inicio es requerida y debe ser una cadena de texto',
       };
     }
 
-    if (!data.end || typeof data.end !== 'string') {
+    if (!eventData.end || typeof eventData.end !== 'string') {
       return {
         isValid: false,
         error: 'La fecha de fin es requerida y debe ser una cadena de texto',
@@ -45,8 +48,8 @@ export class CalendarValidators {
     }
 
     // Validar formato de fechas ISO
-    const startDate = new Date(data.start);
-    const endDate = new Date(data.end);
+    const startDate = new Date(eventData.start as string);
+    const endDate = new Date(eventData.end as string);
 
     if (isNaN(startDate.getTime())) {
       return {
@@ -74,11 +77,11 @@ export class CalendarValidators {
     }
 
     // Validar descripción (opcional)
-    if (data.description !== undefined) {
-      if (typeof data.description !== 'string') {
+    if (eventData.description !== undefined) {
+      if (typeof eventData.description !== 'string') {
         return { isValid: false, error: 'La descripción debe ser una cadena de texto' };
       }
-      if (data.description.length > 1000) {
+      if ((eventData.description as string).length > 1000) {
         return {
           isValid: false,
           error: 'La descripción es demasiado larga (máximo 1000 caracteres)',
@@ -87,18 +90,18 @@ export class CalendarValidators {
     }
 
     // Validar attendees (opcional)
-    if (data.attendees !== undefined) {
-      if (!Array.isArray(data.attendees)) {
+    if (eventData.attendees !== undefined) {
+      if (!Array.isArray(eventData.attendees)) {
         return { isValid: false, error: 'Los invitados deben ser un array' };
       }
 
-      if (data.attendees.length > 50) {
+      if ((eventData.attendees as unknown[]).length > 50) {
         return { isValid: false, error: 'Demasiados invitados (máximo 50)' };
       }
 
       // Validar formato de emails
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      for (const attendee of data.attendees) {
+      for (const attendee of eventData.attendees as unknown[]) {
         if (typeof attendee !== 'string' || !emailRegex.test(attendee)) {
           return { isValid: false, error: `Email inválido: ${attendee}` };
         }
