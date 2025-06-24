@@ -55,5 +55,5 @@ export interface ChatHistory {
 export interface ChatError {
   error: string;
   code?: string;
-  details?: any;
+  details?: Record<string, unknown>;
 }

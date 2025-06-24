@@ -1,4 +1,4 @@
-export type { createCalendarEvent } from './calender.interfaces';
+export type { createCalendarEvent } from './calendar.interfaces';
 export type { MulterRequest } from './multer.interfaces';
 export type {
   ChatMessage,
@@ -10,3 +10,41 @@ export type {
   ChatHistory,
   ChatError,
 } from './chat.interfaces';
+
+// Tipos de base de datos
+export type {
+  User,
+  Conversation,
+  Message,
+  CalendarEvent,
+  CalendarAttendee,
+  PdfDocument,
+  ActivityLog,
+  SystemConfig,
+  ConversationWithMessages,
+  CalendarEventWithAttendees,
+  UserWithRelations,
+  CreateUserData,
+  CreateConversationData,
+  CreateMessageData,
+  CreateCalendarEventData,
+  CreatePdfDocumentData,
+  CreateActivityLogData,
+  UpdateConversationData,
+  UpdateCalendarEventData,
+  UpdatePdfDocumentData,
+  PaginationOptions,
+  ConversationFilters,
+  CalendarEventFilters,
+  PdfDocumentFilters,
+  ActivityLogFilters,
+  PaginatedResponse,
+  ChatStats,
+  CalendarStats,
+  PdfStats,
+  MessageRole,
+  ZapierStatus,
+  ProcessingStatus,
+  ActivityModule,
+  ConfigType,
+} from './database.interfaces';
