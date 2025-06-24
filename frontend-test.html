@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi ChatGPT - Test Frontend</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #555;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .loading {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+        .file-input {
+            border: 2px dashed #007bff;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .file-input:hover {
+            background-color: #f8f9fa;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .status.online {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.offline {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <h1>🤖 Mi ChatGPT - Panel de Pruebas</h1>
+    
+    <!-- Status del servidor -->
+    <div class="container">
+        <h2>📡 Estado del Servidor</h2>
+        <div id="serverStatus" class="status">Verificando...</div>
+        <button onclick="checkServerStatus()">🔄 Verificar Estado</button>
+    </div>
+
+    <!-- Crear Evento -->
+    <div class="container">
+        <h2>📅 Crear Evento de Calendario</h2>
+        <form id="eventForm">
+            <div class="form-group">
+                <label for="summary">Título del Evento:</label>
+                <input type="text" id="summary" name="summary" value="Reunión de prueba" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">Descripción:</label>
+                <textarea id="description" name="description" rows="3">Evento creado desde el panel de pruebas</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="start">Fecha y Hora de Inicio:</label>
+                <input type="datetime-local" id="start" name="start" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="end">Fecha y Hora de Fin:</label>
+                <input type="datetime-local" id="end" name="end" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="attendees">Invitados (emails separados por coma):</label>
+                <input type="text" id="attendees" name="attendees" placeholder="email1@ejemplo.com, email2@ejemplo.com">
+            </div>
+            
+            <button type="submit">📅 Crear Evento</button>
+        </form>
+        <div id="eventResult"></div>
+    </div>
+
+    <!-- Analizar PDF -->
+    <div class="container">
+        <h2>📄 Analizar PDF con IA</h2>
+        <form id="pdfForm">
+            <div class="form-group">
+                <label for="pdfFile">Seleccionar archivo PDF:</label>
+                <div class="file-input" onclick="document.getElementById('pdfFile').click()">
+                    <input type="file" id="pdfFile" name="archivo" accept=".pdf" style="display: none;" required>
+                    <span id="fileLabel">📁 Haz clic para seleccionar un archivo PDF</span>
+                </div>
+            </div>
+            
+            <button type="submit">🔍 Analizar PDF</button>
+        </form>
+        <div id="pdfResult"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000';
+
+        // Verificar estado del servidor
+        async function checkServerStatus() {
+            const statusDiv = document.getElementById('serverStatus');
+            statusDiv.textContent = 'Verificando...';
+            statusDiv.className = 'status';
+            
+            try {
+                const response = await fetch(API_BASE);
+                if (response.ok) {
+                    statusDiv.textContent = '✅ Servidor Online - ' + await response.text();
+                    statusDiv.className = 'status online';
+                } else {
+                    throw new Error('Servidor respondió con error');
+                }
+            } catch (error) {
+                statusDiv.textContent = '❌ Servidor Offline - Ejecuta: npm run dev';
+                statusDiv.className = 'status offline';
+            }
+        }
+
+        // Inicializar fechas por defecto
+        function initializeDates() {
+            const now = new Date();
+            const start = new Date(now.getTime() + 60 * 60 * 1000); // +1 hora
+            const end = new Date(start.getTime() + 60 * 60 * 1000); // +1 hora más
+            
+            document.getElementById('start').value = start.toISOString().slice(0, 16);
+            document.getElementById('end').value = end.toISOString().slice(0, 16);
+        }
+
+        // Manejar formulario de eventos
+        document.getElementById('eventForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const resultDiv = document.getElementById('eventResult');
+            resultDiv.innerHTML = '<div class="result loading">⏳ Creando evento...</div>';
+            
+            const formData = new FormData(e.target);
+            const eventData = {
+                summary: formData.get('summary'),
+                description: formData.get('description'),
+                start: new Date(formData.get('start')).toISOString(),
+                end: new Date(formData.get('end')).toISOString(),
+                attendees: formData.get('attendees') ? formData.get('attendees').split(',').map(email => email.trim()) : []
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/calendario/evento`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(eventData)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<div class="result success">✅ Evento creado exitosamente:\n${JSON.stringify(result, null, 2)}</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="result error">❌ Error al crear evento:\n${JSON.stringify(result, null, 2)}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">❌ Error de conexión:\n${error.message}</div>`;
+            }
+        });
+
+        // Manejar selección de archivo
+        document.getElementById('pdfFile').addEventListener('change', (e) => {
+            const fileLabel = document.getElementById('fileLabel');
+            if (e.target.files.length > 0) {
+                fileLabel.textContent = `📄 ${e.target.files[0].name}`;
+            } else {
+                fileLabel.textContent = '📁 Haz clic para seleccionar un archivo PDF';
+            }
+        });
+
+        // Manejar formulario de PDF
+        document.getElementById('pdfForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const resultDiv = document.getElementById('pdfResult');
+            const fileInput = document.getElementById('pdfFile');
+            
+            if (!fileInput.files[0]) {
+                resultDiv.innerHTML = '<div class="result error">❌ Por favor selecciona un archivo PDF</div>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<div class="result loading">⏳ Analizando PDF con IA...</div>';
+            
+            const formData = new FormData();
+            formData.append('archivo', fileInput.files[0]);
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/pdf/read`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<div class="result success">✅ PDF analizado exitosamente:\n${JSON.stringify(result, null, 2)}</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="result error">❌ Error al analizar PDF:\n${JSON.stringify(result, null, 2)}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">❌ Error de conexión:\n${error.message}</div>`;
+            }
+        });
+
+        // Inicializar la página
+        window.addEventListener('load', () => {
+            initializeDates();
+            checkServerStatus();
+        });
+    </script>
+</body>
+</html>
