@@ -7,6 +7,7 @@
 - 📅 **Calendario**: Creación de eventos usando Zapier MCP
 - 💬 **Chat**: Conversaciones inteligentes con Mistral AI
 - 📄 **PDF**: Extracción de texto y análisis con OCR
+- 🗂️ **Google Drive**: Integración completa con Google Drive para gestión de PDFs
 - 🛡️ **Robusto**: Manejo de errores, validaciones y logging
 - 🔧 **Desarrollo**: Hot reload, linting, formateo automático
 - 📚 **Documentado**: API completamente documentada

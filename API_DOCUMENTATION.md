@@ -6,6 +6,7 @@ API REST para un ChatGPT personalizado que incluye funcionalidades de:
 - 📅 **Calendario**: Creación de eventos usando Zapier MCP
 - 💬 **Chat**: Conversaciones con Mistral AI
 - 📄 **PDF**: Extracción de texto y análisis con OCR
+- 🗂️ **Google Drive**: Integración completa con Google Drive para gestión de PDFs
 
 ## Configuración
 
@@ -18,6 +19,11 @@ MISTRAL_MODEL=mistral-large-latest
 
 # Configuración de Zapier MCP
 ZAPIER_MCP_URL=https://api.zapier.com/v1/mcp/calendar
+
+# Configuración de Google Drive
+GOOGLE_CLIENT_ID=your_google_client_id_here
+GOOGLE_CLIENT_SECRET=your_google_client_secret_here
+GOOGLE_REDIRECT_URI=http://localhost:3000/auth/google/callback
 
 # Configuración del servidor
 PORT=3000
@@ -55,7 +61,8 @@ Información general del servidor
   "endpoints": {
     "calendar": "/api/calendario",
     "chat": "/api/chat",
-    "pdf": "/api/pdf"
+    "pdf": "/api/pdf",
+    "drive": "/api/drive"
   },
   "status": "healthy"
 }
@@ -451,9 +458,256 @@ Para probar los endpoints, puedes usar el archivo `frontend-test.html` incluido 
 
 ---
 
+## 🗂️ Google Drive
+
+### Autenticación
+
+#### `GET /api/drive/auth-url`
+Obtiene la URL de autorización de Google OAuth
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "data": {
+    "authUrl": "https://accounts.google.com/oauth/authorize?...",
+    "message": "Visita esta URL para autorizar el acceso a Google Drive"
+  }
+}
+```
+
+#### `POST /api/drive/auth-callback`
+Maneja el callback de autorización OAuth
+
+**Body:**
+```json
+{
+  "code": "authorization_code_from_google"
+}
+```
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "data": {
+    "message": "Autorización exitosa",
+    "hasRefreshToken": true
+  }
+}
+```
+
+### Gestión de Archivos
+
+#### `POST /api/drive/upload`
+Sube un archivo PDF a Google Drive
+
+**Body:** FormData
+- `pdf`: Archivo PDF (required)
+- `folderId`: ID de carpeta destino (optional)
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "data": {
+    "fileId": "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms",
+    "filename": "documento.pdf",
+    "webViewLink": "https://drive.google.com/file/d/...",
+    "webContentLink": "https://drive.google.com/uc?id=...",
+    "message": "Archivo subido exitosamente a Google Drive"
+  }
+}
+```
+
+#### `GET /api/drive/download/:fileId`
+Descarga un archivo PDF desde Google Drive
+
+**Respuesta:** Archivo PDF binario
+
+#### `DELETE /api/drive/delete/:fileId`
+Elimina un archivo PDF de Google Drive
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "data": {
+    "message": "Archivo eliminado exitosamente de Google Drive",
+    "fileId": "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
+  }
+}
+```
+
+#### `GET /api/drive/info/:fileId`
+Obtiene información de un archivo
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms",
+    "name": "documento.pdf",
+    "size": "1024000",
+    "mimeType": "application/pdf",
+    "createdTime": "2024-01-15T10:30:00.000Z",
+    "modifiedTime": "2024-01-15T10:30:00.000Z",
+    "webViewLink": "https://drive.google.com/file/d/...",
+    "webContentLink": "https://drive.google.com/uc?id=..."
+  }
+}
+```
+
+### Búsqueda y Listado
+
+#### `GET /api/drive/list`
+Lista archivos PDF en Google Drive
+
+**Query Parameters:**
+- `folderId`: ID de carpeta (optional)
+- `pageSize`: Número de archivos por página (optional, default: 10, max: 100)
+- `pageToken`: Token de paginación (optional)
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "data": {
+    "files": [
+      {
+        "id": "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms",
+        "name": "documento.pdf",
+        "size": "1024000",
+        "createdTime": "2024-01-15T10:30:00.000Z",
+        "modifiedTime": "2024-01-15T10:30:00.000Z",
+        "webViewLink": "https://drive.google.com/file/d/..."
+      }
+    ],
+    "nextPageToken": "next_page_token",
+    "hasMore": true,
+    "count": 10
+  }
+}
+```
+
+#### `GET /api/drive/search`
+Busca archivos PDF en Google Drive
+
+**Query Parameters:**
+- `q`: Término de búsqueda (required)
+- `folderId`: ID de carpeta (optional)
+- `pageSize`: Número de archivos por página (optional, default: 10, max: 100)
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "data": {
+    "files": [
+      {
+        "id": "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms",
+        "name": "documento-importante.pdf",
+        "size": "1024000",
+        "createdTime": "2024-01-15T10:30:00.000Z",
+        "modifiedTime": "2024-01-15T10:30:00.000Z",
+        "webViewLink": "https://drive.google.com/file/d/..."
+      }
+    ],
+    "searchTerm": "importante",
+    "count": 1
+  }
+}
+```
+
+### Gestión de Carpetas
+
+#### `POST /api/drive/create-folder`
+Crea una carpeta en Google Drive
+
+**Body:**
+```json
+{
+  "name": "Mi Carpeta",
+  "parentFolderId": "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
+}
+```
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "data": {
+    "folderId": "1NewFolderIdHere",
+    "name": "Mi Carpeta",
+    "parentFolderId": "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms",
+    "message": "Carpeta creada exitosamente en Google Drive"
+  }
+}
+```
+
+### Información del Servicio
+
+#### `GET /api/drive/capabilities`
+Obtiene las capacidades del servicio Google Drive
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "data": {
+    "upload": true,
+    "download": true,
+    "search": true,
+    "delete": true,
+    "createFolder": true,
+    "maxFileSize": "100MB",
+    "supportedFormats": ["application/pdf"],
+    "validationRules": {
+      "maxFileSize": 104857600,
+      "maxFileSizeMB": 100,
+      "allowedMimeTypes": ["application/pdf"],
+      "allowedExtensions": ["pdf"],
+      "maxPageSize": 100,
+      "maxSearchTermLength": 100,
+      "maxFolderNameLength": 255
+    },
+    "isConfigured": true
+  }
+}
+```
+
+#### `GET /api/drive/health`
+Verifica el estado del módulo Google Drive
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "data": {
+    "status": "healthy",
+    "timestamp": "2024-01-15T10:30:00.000Z",
+    "capabilities": {
+      "upload": true,
+      "download": true,
+      "search": true,
+      "delete": true,
+      "createFolder": true,
+      "maxFileSize": "100MB",
+      "supportedFormats": ["application/pdf"]
+    },
+    "message": "Google Drive service is configured and ready"
+  }
+}
+```
+
+---
+
 ## 📝 Notas
 
 - Todos los timestamps están en formato ISO 8601 UTC
-- Los archivos PDF tienen un límite de 10MB
+- Los archivos PDF tienen un límite de 10MB para el módulo PDF local y 100MB para Google Drive
 - Las conversaciones se almacenan en memoria (se pierden al reiniciar el servidor)
 - Se requiere configurar las variables de entorno para funcionalidad completa
+- **Google Drive requiere autenticación OAuth2** antes de usar cualquier endpoint (excepto `/auth-url` y `/health`)
+- Los tokens de acceso se mantienen en memoria y se pierden al reiniciar el servidor
