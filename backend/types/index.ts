@@ -1,13 +1,12 @@
 export type { createCalendarEvent } from './calender.interfaces';
 export type { MulterRequest } from './multer.interfaces';
-export type { 
-  ChatMessage, 
-  ChatConversation, 
-  ChatRequest, 
-  ChatResponse, 
+export type {
+  ChatMessage,
+  ChatConversation,
+  ChatRequest,
+  ChatResponse,
   ChatSettings,
   StreamChatRequest,
   ChatHistory,
-  ChatError
+  ChatError,
 } from './chat.interfaces';
-

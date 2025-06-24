@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { MulterRequest } from '../types/multer.interfaces';
-import {  analyzePdfWithMistral } from './pdfService';
+import { analyzePdfWithMistral } from './pdfService';
 
 /**
  * Controlador para procesar un archivo PDF subido mediante una solicitud HTTP.

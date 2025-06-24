@@ -1,0 +1,34 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Validar formato de commit message
+# Formato esperado: tipo(scope): descripción
+# Ejemplos: feat(chat): agregar validaciones, fix(api): corregir error de conexión
+
+commit_regex='^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .{1,50}'
+
+if ! grep -qE "$commit_regex" "$1"; then
+    echo "❌ Formato de commit inválido!"
+    echo ""
+    echo "📝 Formato esperado: tipo(scope): descripción"
+    echo ""
+    echo "🏷️  Tipos válidos:"
+    echo "   feat:     Nueva funcionalidad"
+    echo "   fix:      Corrección de bug"
+    echo "   docs:     Documentación"
+    echo "   style:    Formato, espacios, etc."
+    echo "   refactor: Refactorización de código"
+    echo "   test:     Agregar o modificar tests"
+    echo "   chore:    Tareas de mantenimiento"
+    echo "   perf:     Mejoras de performance"
+    echo "   ci:       Integración continua"
+    echo "   build:    Sistema de build"
+    echo "   revert:   Revertir cambios"
+    echo ""
+    echo "✅ Ejemplos válidos:"
+    echo "   feat(chat): agregar validaciones de entrada"
+    echo "   fix(api): corregir error de conexión con Mistral"
+    echo "   docs: actualizar README con instrucciones"
+    echo ""
+    exit 1
+fi
