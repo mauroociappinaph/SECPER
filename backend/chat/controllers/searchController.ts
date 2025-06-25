@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { chatService } from '../services/chatService';
-import { ChatValidators } from '../utils/validators';
+import { ChatValidators } from '../utils/chatValidators';
 
 /**
  * Controlador para operaciones de búsqueda y estadísticas

@@ -5,5 +5,5 @@ export { ConversationService } from './services/conversationService';
 export { MessageController } from './controllers/messageController';
 export { ConversationController } from './controllers/conversationController';
 export { SearchController } from './controllers/searchController';
-export { ChatValidators } from './utils/validators';
+export { ChatValidators } from './utils/chatValidators';
 export { default as chatRoutes } from './chatRoutes';

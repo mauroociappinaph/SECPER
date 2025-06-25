@@ -4,7 +4,6 @@ import { ChatRequest } from '../../types';
  * Utilidades para validar datos del chat
  */
 export class ChatValidators {
-  
   /**
    * Valida un mensaje de chat
    */
@@ -92,7 +91,10 @@ export class ChatValidators {
     }
 
     if (query.length > 200) {
-      return { isValid: false, error: 'La consulta de búsqueda es demasiado larga (máximo 200 caracteres)' };
+      return {
+        isValid: false,
+        error: 'La consulta de búsqueda es demasiado larga (máximo 200 caracteres)',
+      };
     }
 
     return { isValid: true };
@@ -118,20 +120,31 @@ export class ChatValidators {
 
     // Validar parámetros opcionales
     if (request.temperature !== undefined) {
-      if (typeof request.temperature !== 'number' || request.temperature < 0 || request.temperature > 2) {
+      if (
+        typeof request.temperature !== 'number' ||
+        request.temperature < 0 ||
+        request.temperature > 2
+      ) {
         return { isValid: false, error: 'La temperatura debe ser un número entre 0 y 2' };
       }
     }
 
     if (request.maxTokens !== undefined) {
-      if (typeof request.maxTokens !== 'number' || request.maxTokens < 1 || request.maxTokens > 4000) {
+      if (
+        typeof request.maxTokens !== 'number' ||
+        request.maxTokens < 1 ||
+        request.maxTokens > 4000
+      ) {
         return { isValid: false, error: 'maxTokens debe ser un número entre 1 y 4000' };
       }
     }
 
     if (request.systemPrompt !== undefined) {
       if (typeof request.systemPrompt !== 'string' || request.systemPrompt.length > 1000) {
-        return { isValid: false, error: 'systemPrompt debe ser una cadena de texto de máximo 1000 caracteres' };
+        return {
+          isValid: false,
+          error: 'systemPrompt debe ser una cadena de texto de máximo 1000 caracteres',
+        };
       }
     }
 
