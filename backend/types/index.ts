@@ -11,6 +11,21 @@ export type {
   ChatError,
 } from './chat.interfaces';
 
+// Exportar interfaces de servicios
+export type {
+  IBaseService,
+  IConfigurableService,
+  IChatService,
+  IMistralService,
+  IConversationService,
+  IPdfService,
+  ICalendarService,
+  IDriveAuthService,
+  IDriveFileOperationsService,
+  IDriveSearchService,
+  IGoogleDriveService,
+} from '../interfaces/services.interfaces';
+
 // Tipos de base de datos
 export type {
   User,
