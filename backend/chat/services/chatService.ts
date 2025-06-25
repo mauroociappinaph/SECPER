@@ -1,11 +1,12 @@
 import { ChatRequest, ChatResponse, ChatSettings } from '../../types';
 import { MistralService } from './mistralService';
 import { ConversationService } from './conversationService';
+import { IChatService } from '../../interfaces/services.interfaces';
 
 /**
  * Servicio principal de chat que orquesta todas las operaciones
  */
-export class ChatService {
+export class ChatService implements IChatService {
   private mistralService: MistralService;
   private conversationService: ConversationService;
   private defaultSettings: ChatSettings;
@@ -120,6 +121,13 @@ export class ChatService {
 
   /**
    * Verifica si el servicio está configurado correctamente
+   */
+  isConfigured(): boolean {
+    return this.mistralService.isConfigured();
+  }
+
+  /**
+   * Verifica el estado de salud del servicio
    */
   isHealthy(): boolean {
     return this.mistralService.isConfigured();

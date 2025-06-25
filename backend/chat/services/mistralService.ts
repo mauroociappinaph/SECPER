@@ -1,10 +1,11 @@
 import { Mistral } from '@mistralai/mistralai';
 import { ChatMessage } from '../../types';
+import { IMistralService } from '../../interfaces/services.interfaces';
 
 /**
  * Servicio para manejar la comunicación con Mistral AI
  */
-export class MistralService {
+export class MistralService implements IMistralService {
   private client: Mistral;
 
   constructor() {
@@ -19,7 +20,7 @@ export class MistralService {
    * Convierte mensajes al formato requerido por Mistral
    */
   private formatMessagesForMistral(
-    messages: ChatMessage[], 
+    messages: ChatMessage[],
     systemPrompt?: string
   ): Array<{ role: 'system' | 'user' | 'assistant'; content: string }> {
     const formattedMessages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [];
@@ -28,7 +29,7 @@ export class MistralService {
     if (systemPrompt) {
       formattedMessages.push({
         role: 'system' as const,
-        content: systemPrompt
+        content: systemPrompt,
       });
     }
 
@@ -37,7 +38,7 @@ export class MistralService {
       if (msg.role !== 'system') {
         formattedMessages.push({
           role: msg.role as 'user' | 'assistant',
-          content: msg.content
+          content: msg.content,
         });
       }
     });
@@ -91,12 +92,12 @@ export class MistralService {
         model = 'mistral-large-latest',
         temperature = 0.7,
         maxTokens = 1000,
-        systemPrompt
+        systemPrompt,
       } = options;
 
       // Preparar mensajes para Mistral
       const mistralMessages = this.formatMessagesForMistral(messages, systemPrompt);
-      
+
       // Llamar a Mistral API
       const response = await this.client.chat.complete({
         model,
@@ -117,10 +118,9 @@ export class MistralService {
         usage: {
           promptTokens: response.usage?.promptTokens || 0,
           completionTokens: response.usage?.completionTokens || 0,
-          totalTokens: response.usage?.totalTokens || 0
-        }
+          totalTokens: response.usage?.totalTokens || 0,
+        },
       };
-
     } catch (error: any) {
       console.error('Error en MistralService.generateResponse:', error);
       throw new Error(`Error al comunicarse con Mistral: ${error.message}`);
@@ -132,5 +132,12 @@ export class MistralService {
    */
   isConfigured(): boolean {
     return !!process.env.MISTRAL_API_KEY;
+  }
+
+  /**
+   * Verifica el estado de salud del servicio
+   */
+  isHealthy(): boolean {
+    return this.isConfigured();
   }
 }
