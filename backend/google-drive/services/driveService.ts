@@ -1,13 +1,14 @@
 import { driveAuthService } from './auth/authService';
 import { driveFileOperationsService } from './files/fileOperationsService';
 import { driveSearchService, DriveFile } from './search/searchService';
+import { IGoogleDriveService } from '../../interfaces/services.interfaces';
 
 /**
  * Servicio principal que orquesta la integración con Google Drive.
  * Agrupa operaciones de autenticación, carga/descarga de archivos, búsqueda y estado.
  * Utiliza servicios modulares para mejorar el mantenimiento y la reutilización.
  */
-export class GoogleDriveService {
+export class GoogleDriveService implements IGoogleDriveService {
   constructor() {
     console.log('[GoogleDriveService] Modular Google Drive service initialized');
   }
@@ -180,29 +181,18 @@ export class GoogleDriveService {
    * Obtiene las capacidades del servicio
    */
   getCapabilities(): {
-    upload: boolean;
-    download: boolean;
+    auth: boolean;
+    fileOperations: boolean;
     search: boolean;
-    delete: boolean;
-    createFolder: boolean;
-    advancedSearch: boolean;
-    folderStats: boolean;
-    tokenRefresh: boolean;
-    maxFileSize: string;
-    supportedFormats: string[];
+    quotaUsed?: number;
+    quotaLimit?: number;
   } {
-    const isHealthy = this.isHealthy();
     return {
-      upload: isHealthy,
-      download: isHealthy,
-      search: isHealthy,
-      delete: isHealthy,
-      createFolder: isHealthy,
-      advancedSearch: isHealthy,
-      folderStats: isHealthy,
-      tokenRefresh: isHealthy,
-      maxFileSize: '100MB',
-      supportedFormats: ['application/pdf'],
+      auth: driveAuthService.isHealthy(),
+      fileOperations: driveFileOperationsService.isHealthy(),
+      search: driveSearchService.isHealthy(),
+      quotaUsed: undefined, // Se podría implementar en el futuro
+      quotaLimit: undefined, // Se podría implementar en el futuro
     };
   }
 }

@@ -2,11 +2,12 @@ import axios from 'axios';
 import { ZAPIER_MCP_URL } from '../../config/constants';
 import { createCalendarEvent as CalendarEventType } from '../../types';
 import { CalendarServiceError } from '../../utils/errors';
+import { ICalendarService } from '../../interfaces/services.interfaces';
 
 /**
  * Servicio para manejar operaciones de calendario
  */
-export class CalendarService {
+export class CalendarService implements ICalendarService {
   /**
    * Crea un evento en el calendario usando el MCP de Zapier
    */
@@ -65,6 +66,13 @@ export class CalendarService {
 
   /**
    * Verifica si el servicio está configurado correctamente
+   */
+  isConfigured(): boolean {
+    return !!ZAPIER_MCP_URL;
+  }
+
+  /**
+   * Verifica si el servicio está funcionando correctamente
    */
   isHealthy(): boolean {
     return !!ZAPIER_MCP_URL;

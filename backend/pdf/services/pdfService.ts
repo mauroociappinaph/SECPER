@@ -1,11 +1,12 @@
 import pdfParse from 'pdf-parse';
 import { Mistral } from '@mistralai/mistralai';
 import { PDFServiceError } from '../../utils/errors';
+import { IPdfService } from '../../interfaces/services.interfaces';
 
 /**
  * Servicio para manejar operaciones con PDFs
  */
-export class PdfService {
+export class PdfService implements IPdfService {
   private mistralClient: Mistral | null = null;
 
   constructor() {
@@ -121,7 +122,14 @@ export class PdfService {
   }
 
   /**
-   * Verifica si el servicio est√° configurado correctamente
+   * Verifica si el servicio está configurado correctamente
+   */
+  isConfigured(): boolean {
+    return !!process.env.MISTRAL_API_KEY;
+  }
+
+  /**
+   * Verifica si el servicio está funcionando correctamente
    */
   isHealthy(): boolean {
     return !!this.mistralClient;
