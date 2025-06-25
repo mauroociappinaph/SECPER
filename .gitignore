@@ -58,3 +58,6 @@ jspm_packages/
 /generated/prisma
 
 .package-lock.json
+
+*.key
+*.pem
