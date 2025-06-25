@@ -1,43 +1,99 @@
 import { Request, Response, NextFunction } from 'express';
-import { AppError } from '../utils/errors';
+import { AppError, EnhancedAppError, ErrorUtils, ErrorContext } from '../utils/errors';
+import { configService } from '../config/configService';
 
 /**
- * Middleware global para manejo de errores
+ * Middleware global para manejo de errores mejorado
  */
 export const errorHandler = (
-  error: Error | AppError,
+  error: Error | AppError | EnhancedAppError,
   req: Request,
   res: Response,
   _next: NextFunction
 ): void => {
-  console.error(`[${new Date().toISOString()}] [ErrorHandler] Error caught:`, {
-    message: error.message,
-    stack: error.stack,
-    url: req.url,
+  // Crear contexto del error
+  const errorContext: ErrorContext = {
+    requestId: req.headers['x-request-id'] as string,
+    endpoint: req.path,
     method: req.method,
-    ip: req.ip,
     userAgent: req.get('User-Agent'),
-  });
+    ip: req.ip,
+    timestamp: new Date(),
+    additionalData: {
+      query: req.query,
+      params: req.params,
+    },
+  };
 
-  // Si es un error personalizado de la aplicación
+  // Logging mejorado del error
+  const sanitizedError = ErrorUtils.sanitizeError(error);
+  const config = configService.getLoggingConfig();
+
+  if (config.level === 'debug' || config.level === 'info') {
+    console.error(`[${new Date().toISOString()}] [ErrorHandler] Error caught:`, {
+      ...sanitizedError,
+      context: errorContext,
+    });
+  } else {
+    console.error(`[${new Date().toISOString()}] [ErrorHandler] ${error.message}`);
+  }
+
+  // Preparar respuesta base
+  const baseResponse = {
+    timestamp: new Date().toISOString(),
+    path: req.path,
+    requestId: errorContext.requestId,
+  };
+
+  // Manejo de errores mejorados
+  if (error instanceof EnhancedAppError) {
+    const response = {
+      error: error.message,
+      code: error.code,
+      category: error.category,
+      severity: error.severity,
+      ...baseResponse,
+      ...(error.metadata && { metadata: error.metadata }),
+      ...(error.isRetryable && {
+        retryable: true,
+        retryAfter: error.retryAfter,
+      }),
+    };
+
+    // Agregar información de debugging en desarrollo
+    if (configService.getServerConfig().nodeEnv === 'development') {
+      response.metadata = {
+        ...response.metadata,
+        stack: error.stack,
+        context: error.context,
+      };
+    }
+
+    res.status(error.statusCode).json(response);
+    return;
+  }
+
+  // Manejo de errores básicos de la aplicación
   if (error instanceof AppError) {
     res.status(error.statusCode).json({
       error: error.message,
       code: error.code,
-      timestamp: new Date().toISOString(),
-      path: req.path,
+      ...baseResponse,
       ...(error.metadata && { metadata: error.metadata }),
     });
     return;
   }
 
-  // Error de Multer (archivos)
+  // Errores específicos de Multer (archivos)
   if (error.message.includes('File too large')) {
     res.status(413).json({
       error: 'Archivo demasiado grande',
       code: 'FILE_TOO_LARGE',
-      timestamp: new Date().toISOString(),
-      path: req.path,
+      category: 'validation',
+      ...baseResponse,
+      metadata: {
+        maxSize: configService.getServerConfig().maxFileSize,
+      },
     });
     return;
   }
@@ -46,8 +102,8 @@ export const errorHandler = (
     res.status(400).json({
       error: error.message,
       code: 'INVALID_FILE_TYPE',
-      timestamp: new Date().toISOString(),
-      path: req.path,
+      category: 'validation',
+      ...baseResponse,
     });
     return;
   }
@@ -57,21 +113,44 @@ export const errorHandler = (
     res.status(400).json({
       error: 'JSON inválido en el cuerpo de la solicitud',
       code: 'INVALID_JSON',
-      timestamp: new Date().toISOString(),
-      path: req.path,
+      category: 'validation',
+      ...baseResponse,
+    });
+    return;
+  }
+
+  // Errores de red/timeout
+  if (
+    error.message.includes('ECONNRESET') ||
+    error.message.includes('ETIMEDOUT') ||
+    error.message.includes('ENOTFOUND')
+  ) {
+    res.status(503).json({
+      error: 'Error de conectividad del servicio',
+      code: 'SERVICE_UNAVAILABLE',
+      category: 'network',
+      retryable: true,
+      retryAfter: 5000,
+      ...baseResponse,
     });
     return;
   }
 
   // Error genérico del servidor
+  const isDevelopment = configService.getServerConfig().nodeEnv === 'development';
+
   res.status(500).json({
     error: 'Error interno del servidor',
     code: 'INTERNAL_SERVER_ERROR',
-    timestamp: new Date().toISOString(),
-    path: req.path,
-    ...(process.env.NODE_ENV === 'development' && {
-      originalError: error.message,
-      stack: error.stack,
+    category: 'internal',
+    severity: 'high',
+    ...baseResponse,
+    ...(isDevelopment && {
+      debug: {
+        originalError: error.message,
+        stack: error.stack,
+        name: error.name,
+      },
     }),
   });
 };
