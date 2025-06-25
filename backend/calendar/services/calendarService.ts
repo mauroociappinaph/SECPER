@@ -2,7 +2,7 @@ import axios from 'axios';
 import { ZAPIER_MCP_URL } from '../../config/constants';
 import { createCalendarEvent as CalendarEventType } from '../../types';
 import { CalendarServiceError } from '../../utils/errors';
-import { ICalendarService } from '../../interfaces/services.interfaces';
+import { ICalendarService } from '../../types/services.interfaces';
 
 /**
  * Servicio para manejar operaciones de calendario

@@ -1,6 +1,6 @@
 import { Mistral } from '@mistralai/mistralai';
 import { ChatMessage } from '../../types';
-import { IMistralService } from '../../interfaces/services.interfaces';
+import { IMistralService } from '../../types/services.interfaces';
 
 /**
  * Servicio para manejar la comunicación con Mistral AI

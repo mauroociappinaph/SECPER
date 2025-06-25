@@ -2,7 +2,7 @@
  * Servicio centralizado de health checks para todos los módulos de la aplicación
  */
 
-import { IBaseService } from '../interfaces/services.interfaces';
+import { IBaseService } from '../types/services.interfaces';
 
 export interface HealthCheckResult {
   service: string;

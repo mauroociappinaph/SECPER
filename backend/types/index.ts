@@ -24,7 +24,7 @@ export type {
   IDriveFileOperationsService,
   IDriveSearchService,
   IGoogleDriveService,
-} from '../interfaces/services.interfaces';
+} from './services.interfaces';
 
 // Tipos de base de datos
 export type {

@@ -1,7 +1,7 @@
 import pdfParse from 'pdf-parse';
 import { Mistral } from '@mistralai/mistralai';
 import { PDFServiceError } from '../../utils/errors';
-import { IPdfService } from '../../interfaces/services.interfaces';
+import { IPdfService } from '../../types/services.interfaces';
 
 /**
  * Servicio para manejar operaciones con PDFs

@@ -1,7 +1,7 @@
 import { driveAuthService } from './auth/authService';
 import { driveFileOperationsService } from './files/fileOperationsService';
 import { driveSearchService, DriveFile } from './search/searchService';
-import { IGoogleDriveService } from '../../interfaces/services.interfaces';
+import { IGoogleDriveService } from '../../types/services.interfaces';
 
 /**
  * Servicio principal que orquesta la integración con Google Drive.

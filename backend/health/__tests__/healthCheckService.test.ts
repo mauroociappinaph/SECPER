@@ -3,7 +3,7 @@
  */
 
 import { HealthCheckService } from '../healthCheckService';
-import { IBaseService } from '../../interfaces/services.interfaces';
+import { IBaseService } from '../../types/services.interfaces';
 
 // Mock service para testing
 class MockService implements IBaseService {

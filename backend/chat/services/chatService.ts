@@ -1,7 +1,7 @@
 import { ChatRequest, ChatResponse, ChatSettings } from '../../types';
 import { MistralService } from './mistralService';
 import { ConversationService } from './conversationService';
-import { IChatService } from '../../interfaces/services.interfaces';
+import { IChatService } from '../../types/services.interfaces';
 
 /**
  * Servicio principal de chat que orquesta todas las operaciones

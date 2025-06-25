@@ -3,7 +3,7 @@
  * Estas interfaces definen contratos claros para cada servicio
  */
 
-import { ChatMessage, ChatConversation, ChatRequest, ChatResponse } from '../types';
+import { ChatMessage, ChatConversation, ChatRequest, ChatResponse } from './index';
 
 // ==================== INTERFACES BASE ====================
 
@@ -360,23 +360,7 @@ export interface IDriveSearchService extends IBaseService {
   /**
    * Búsqueda avanzada
    */
-  advancedSearch(criteria: {
-    name?: string;
-    mimeType?: string;
-    modifiedTime?: { after?: string; before?: string };
-    size?: { min?: number; max?: number };
-    folderId?: string;
-    pageSize?: number;
-  }): Promise<{
-    files: Array<{
-      id: string;
-      name: string;
-      size: string;
-      createdTime: string;
-      modifiedTime: string;
-      webViewLink: string;
-    }>;
-  }>;
+  advancedSearch(criteria: DriveSearchCriteria): Promise<{ files: DriveFileInfo[] }>;
 
   /**
    * Obtiene estadísticas de carpeta
@@ -453,7 +437,7 @@ export interface IGoogleDriveService extends IBaseService {
       webViewLink: string;
     }>;
   }>;
-  advancedSearch(criteria: any): Promise<{ files: any[] }>;
+  advancedSearch(criteria: DriveSearchCriteria): Promise<{ files: DriveFileInfo[] }>;
   getFolderStats(folderId?: string): Promise<{
     totalFiles: number;
     totalSize: number;
@@ -468,4 +452,23 @@ export interface IGoogleDriveService extends IBaseService {
     quotaUsed?: number;
     quotaLimit?: number;
   };
+}
+
+// Tipos explícitos para búsqueda avanzada en Google Drive
+export interface DriveSearchCriteria {
+  name?: string;
+  mimeType?: string;
+  modifiedTime?: { after?: string; before?: string };
+  size?: { min?: number; max?: number };
+  folderId?: string;
+  pageSize?: number;
+}
+
+export interface DriveFileInfo {
+  id: string;
+  name: string;
+  size: string;
+  createdTime: string;
+  modifiedTime: string;
+  webViewLink: string;
 }
