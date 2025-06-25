@@ -4,6 +4,16 @@
 
 import { IBaseService } from '../types/services.interfaces';
 
+export interface HealthCheckMetadata {
+  configuration?: Record<string, unknown>;
+  capabilities?: Record<string, unknown>;
+  apiKeyConfigured?: boolean;
+  zapierUrlConfigured?: boolean;
+  credentialsConfigured?: boolean;
+  metadataError?: string;
+  // Agrega aquí otros campos esperados
+}
+
 export interface HealthCheckResult {
   service: string;
   status: 'healthy' | 'unhealthy' | 'degraded';
@@ -11,7 +21,7 @@ export interface HealthCheckResult {
   lastCheck: Date;
   responseTime?: number;
   error?: string;
-  metadata?: Record<string, any>;
+  metadata?: HealthCheckMetadata;
 }
 
 export interface SystemHealthStatus {

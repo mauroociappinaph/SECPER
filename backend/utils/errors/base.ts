@@ -98,3 +98,18 @@ export class EnhancedAppError extends AppError {
     this.retryAfter = options?.retryAfter;
   }
 }
+
+export interface HealthCheckMetadata {
+  configuration?: Record<string, unknown>;
+  capabilities?: Record<string, unknown>;
+  apiKeyConfigured?: boolean;
+  zapierUrlConfigured?: boolean;
+  credentialsConfigured?: boolean;
+  metadataError?: string;
+  // Agrega aquí otros campos esperados
+}
+
+export interface HealthCheckResult {
+  // ...otros campos...
+  metadata?: HealthCheckMetadata;
+}
